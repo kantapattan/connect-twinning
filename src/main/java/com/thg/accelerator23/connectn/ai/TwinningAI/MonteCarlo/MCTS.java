@@ -13,38 +13,45 @@ public class MCTS {
     MCTS_Updater updater = new MCTS_Updater();
     BoardAnalyser boardAnalyser = new BoardAnalyser(new GameConfig(10,8,4 ));
 
-
     public int MCTS_Searcher(Board board, Counter player) throws InvalidMoveException {
-        System.out.println("In MCTS Searcher");
-        int loop =0;
+        int loop = 0;
         Node rootNode = new Node(board, player);
         Tree tree = new Tree(rootNode);
 
-        long endTime = System.currentTimeMillis() + 5000;
+        long endTime = System.currentTimeMillis() + 8500;
         long currentTime = System.currentTimeMillis();
 
-        while (System.currentTimeMillis()-currentTime < endTime) {
 
-            Node promisingNode = selector.selectPromisingNode(rootNode);
+        if (isBoardEmpty(rootNode.getState().getBoard()) == 0) {
+            return 4;
+        } else {
 
-            GameState boardStatus = boardAnalyser.calculateGameState(promisingNode.getState().getBoard());
-            if (!boardStatus.isEnd()){
-                promisingNode = expander.expandNode(promisingNode);
-//                promisingNode = expander.expand(promisingNode);
+            while (System.currentTimeMillis() < endTime) {
+                Node promisingNode = selector.selectPromisingNode(rootNode);
+                GameState boardStatus = boardAnalyser.calculateGameState(promisingNode.getState().getBoard());
+                if (!boardStatus.isEnd()) {
+                    promisingNode = expander.expandNode(promisingNode);
+                    GameState randomPlayResult = simulator.simulateRandomGame(promisingNode);
+                    updater.update(promisingNode, randomPlayResult);
+                }
+                System.out.println(promisingNode.getChildList().size());
             }
-
-            GameState randomPlayResult = simulator.simulateRandomGame(promisingNode);
-
-            updater.update(promisingNode, randomPlayResult);
+            Node likelyWinningNode = tree.getRoot().getChildWithHighestScore();
+            tree.setRoot(likelyWinningNode);
+            return likelyWinningNode.getState().getPosition().getX();
         }
+    }
 
-//        Node likelyWinningNode = tree.getRoot().getChildWithMaxWinVisit();
-        Node likelyWinningNode = tree.getRoot().getChildWithHighestScore();
-        tree.setRoot(likelyWinningNode);
-
-        loop += 1;
-        System.out.println("Finish Loop " + loop);
-        return likelyWinningNode.getState().getPosition().getX();
+    public int isBoardEmpty(Board board){
+        int boardEmpty = 0;
+        for (int col = 0; col < board.getConfig().getWidth(); col++){
+            for (int row = 0; row < board.getConfig().getHeight(); row++){
+                if (board.hasCounterAtPosition(new Position(col, row))){
+                    boardEmpty++;
+                } else { boardEmpty = boardEmpty;}
+            }
+        }
+        return boardEmpty;
     }
 
 }
