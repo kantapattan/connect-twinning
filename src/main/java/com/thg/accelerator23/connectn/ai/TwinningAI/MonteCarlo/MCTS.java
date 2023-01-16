@@ -30,12 +30,12 @@ public class MCTS {
                     GameState randomPlayResult = simulator.simulateRandomGame(promisingNode);
                     updater.update(promisingNode, randomPlayResult);
                 }
-                }
             }
-            Node likelyWinningNode = tree.getRoot().getChildWithMaxWinVisit();
-            tree.setRoot(likelyWinningNode);
-            return likelyWinningNode.getState().getPosition().getX();
         }
+        Node likelyWinningNode = tree.getRoot().getChildWithMaxWinVisit();
+        tree.setRoot(likelyWinningNode);
+        return likelyWinningNode.getState().getPosition().getX();
+    }
 
 
     public int isBoardEmpty(Board board){
