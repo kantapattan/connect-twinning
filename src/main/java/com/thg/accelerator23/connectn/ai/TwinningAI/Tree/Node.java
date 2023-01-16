@@ -41,20 +41,6 @@ public class Node {
 
 
     public Node getChildWithMaxWinVisit() {
-        return Collections.max(this.childList, Comparator.comparing(child -> {
-            return child.getState().getWinVisitCount();
-        }));
+        return Collections.max(this.childList, Comparator.comparing(child -> child.getState().getWinVisitCount()));
     }
-
-    public Node getChildWithHighestScore(){
-        Node highestScoreNode = this.childList.get(0);
-        for (int i = 0; i < this.childList.size(); i++){
-            if (highestScoreNode.getState().getWinVisitCount()< this.childList.get(i).getState().getWinVisitCount()){
-                highestScoreNode = this.childList.get(i);
-            }
-        }
-        return highestScoreNode;
-    }
-
-
 }

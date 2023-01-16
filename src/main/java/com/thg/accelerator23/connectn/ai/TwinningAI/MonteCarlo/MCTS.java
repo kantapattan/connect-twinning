@@ -14,18 +14,14 @@ public class MCTS {
     BoardAnalyser boardAnalyser = new BoardAnalyser(new GameConfig(10,8,4 ));
 
     public int MCTS_Searcher(Board board, Counter player) throws InvalidMoveException {
-        int loop = 0;
         Node rootNode = new Node(board, player);
         Tree tree = new Tree(rootNode);
 
         long endTime = System.currentTimeMillis() + 8500;
-        long currentTime = System.currentTimeMillis();
-
 
         if (isBoardEmpty(rootNode.getState().getBoard()) == 0) {
             return 4;
         } else {
-
             while (System.currentTimeMillis() < endTime) {
                 Node promisingNode = selector.selectPromisingNode(rootNode);
                 GameState boardStatus = boardAnalyser.calculateGameState(promisingNode.getState().getBoard());
@@ -34,13 +30,13 @@ public class MCTS {
                     GameState randomPlayResult = simulator.simulateRandomGame(promisingNode);
                     updater.update(promisingNode, randomPlayResult);
                 }
-                System.out.println(promisingNode.getChildList().size());
+                }
             }
-            Node likelyWinningNode = tree.getRoot().getChildWithHighestScore();
+            Node likelyWinningNode = tree.getRoot().getChildWithMaxWinVisit();
             tree.setRoot(likelyWinningNode);
             return likelyWinningNode.getState().getPosition().getX();
         }
-    }
+
 
     public int isBoardEmpty(Board board){
         int boardEmpty = 0;
